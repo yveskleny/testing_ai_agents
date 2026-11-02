@@ -1,0 +1,28 @@
+Amostra para testar o renomeador de guias
+=========================================
+
+Conteúdo
+--------
+pdfs_1_a_50.zip  50 PDFs de 1 página, nomeados 1.pdf .. 50.pdf, com a assinatura %PDF-1.4.
+guias.csv        Tabela com cabeçalho (numero,paciente,numero_da_guia) e 50 linhas.
+                 Nomes fictícios e números de guia fictícios de 9 dígitos, todos únicos.
+
+Como usar
+---------
+1. Descompacte o zip em qualquer pasta (ou anexe os 50 PDFs direto, sem descompactar nada).
+2. Abra o index.html do app e anexe os 50 PDFs em "PDFs do lote".
+3. Anexe o guias.csv em "Tabela das guias".
+4. A prévia deve ficar sem pendências e mostrar 50 arquivos de saída no padrão:
+
+   154144257_RA_doc1.pdf
+   216946945_RA_doc2.pdf
+   ...
+   365333495_RA_doc50.pdf
+
+5. Clique em "Gerar e baixar ZIP" para receber guias_renomeadas.zip.
+
+Resultado esperado
+------------------
+- 50 PDFs reconhecidos, numeração 1..50 completa e sem buracos.
+- Nenhum aviso de guia repetida e nenhum nome de paciente vazio.
+- O conteúdo dos PDFs não muda; apenas o nome.
