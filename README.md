@@ -41,7 +41,11 @@ segurança da tabela descritos abaixo.
 
 A coluna de **número sequencial é opcional**. Quando ela não existe, a página numera
 automaticamente **1..n na ordem das linhas** — basta colar os números de guia (e os nomes)
-extraídos do relatório:
+extraídos do relatório.
+
+A numeração aceita zeros à esquerda (`01`, `02`, `03`) e rótulos comuns de scanner
+(`Nº 01`, `Guia 02`, `Item 03`): o valor é lido como inteiro. Os PDFs também podem vir
+nomeados como `01.pdf`, `02.pdf` etc.
 
 | paciente     | nº da guia |
 | ------------ | ---------- |
@@ -120,7 +124,7 @@ Todo o processamento continua no navegador — os arquivos não saem da máquina
 ## Desenvolvimento
 
 ```bash
-node --test        # 73 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
+node --test        # 78 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
 ```
 
 Estrutura:

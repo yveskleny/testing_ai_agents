@@ -41,6 +41,20 @@ test('fluxo completo com CSV (cabeçalho, ponto e vírgula) gera os nomes espera
   assert.deepEqual(await zip.get('98765_RA_doc2.pdf'), PDF_2);
 });
 
+test('fluxo completo com numeração 01, 02 e PDFs 01.pdf, 02.pdf', async () => {
+  const matrix = Csv.parse('numero,paciente,guia\n01,Maria,00123\n02,José,00987\n');
+  const table = Core.parseTable(matrix);
+  assert.deepEqual(table.errors, []);
+
+  const { plan, zip } = await run(table, [
+    { name: '01.pdf', number: 1, bytes: PDF_1 },
+    { name: '02.pdf', number: 2, bytes: PDF_2 },
+  ]);
+
+  assert.equal(plan.entries[0].outputName, '00123_RA_doc1.pdf');
+  assert.deepEqual(zip.names().sort(), ['00123_RA_doc1.pdf', '00987_RA_doc2.pdf']);
+});
+
 test('fluxo completo com XLSX reaproveita o mesmo núcleo', async () => {
   const matrix = await Xlsx.read(
     buildXlsx({

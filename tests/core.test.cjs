@@ -512,3 +512,49 @@ test('parseTable recusa tabela acima do limite de colunas', () => {
   assert.equal(result.rows.length, 0);
   assert.match(result.errors.join('\n'), /limite de segurança/);
 });
+
+test('parseTable aceita numeração sequencial com zeros à esquerda', () => {
+  const result = Core.parseTable([
+    ['numero', 'paciente', 'guia'],
+    ['01', 'Maria', '123'],
+    ['02', 'José', '456'],
+    ['03', 'Ana', '789'],
+  ]);
+
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.rows.map((row) => row.index), [1, 2, 3]);
+});
+
+test('parseTable aceita 01, 02 sem cabeçalho', () => {
+  const result = Core.parseTable([
+    ['01', 'Maria', '123'],
+    ['02', 'José', '456'],
+  ]);
+
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.autoNumber, false);
+  assert.deepEqual(result.rows.map((row) => row.index), [1, 2]);
+});
+
+test('parseTable aceita rótulos de scanner na coluna de número', () => {
+  const result = Core.parseTable([
+    ['Nº', 'Paciente', 'Guia'],
+    ['Nº 01', 'Maria', '123'],
+    ['Guia 02', 'José', '456'],
+    ['Item 03', 'Ana', '789'],
+  ]);
+
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.rows.map((row) => row.index), [1, 2, 3]);
+});
+
+test('parseTable preserva zeros à esquerda do número da guia', () => {
+  const result = Core.parseTable([
+    ['numero', 'paciente', 'guias'],
+    ['1', 'Maria', '00123'],
+    ['2', 'José', '00987'],
+  ]);
+
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.rows.map((row) => row.guide), ['00123', '00987']);
+});
