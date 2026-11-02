@@ -33,6 +33,35 @@ test('makeOutputNameFor aplica o padrão SulAmérica: 11 zeros + número da guia
   );
 });
 
+test('makeOutputNameFor não repete os 11 zeros quando a guia já os contém', () => {
+  assert.equal(
+    Core.makeOutputNameFor('sulamerica', {
+      index: 1,
+      patient: 'Maria Silva',
+      guide: '00000000000123456789',
+    }),
+    '00000000000123456789.pdf'
+  );
+  assert.equal(
+    Core.makeOutputNameFor('sulamerica', {
+      index: 2,
+      patient: 'José Souza',
+      guide: '  0000000000098765  ',
+    }),
+    '0000000000098765.pdf'
+  );
+  // Zeros a mais continuam sendo respeitados (não entram 11 novos).
+  assert.equal(
+    Core.makeOutputNameFor('sulamerica', { index: 3, guide: '0000000000000123' }),
+    '0000000000000123.pdf'
+  );
+  // Menos de 11 zeros continua recebendo o prefixo do padrão.
+  assert.equal(
+    Core.makeOutputNameFor('sulamerica', { index: 4, guide: '000123' }),
+    '00000000000000123.pdf'
+  );
+});
+
 test('makeOutputNameFor aplica o padrão AMHP', () => {
   assert.equal(
     Core.makeOutputNameFor('amhp', { index: 2, guide: '1', patient: 'José Souza' }),

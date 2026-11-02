@@ -4,13 +4,13 @@
 
   var Core = window.GuiaCore;
   var NUMBERING_HINTS = {
-    auto: 'Sem coluna de número, a ordem das linhas define o 1..n.',
-    sequence: 'A coluna de número é ignorada: vale a ordem das linhas.',
-    column: 'A tabela precisa ter uma coluna de número (1..n).'
+    auto: 'Se a planilha tiver uma coluna de número, ela é usada. Se não tiver, a ordem das linhas define 1, 2, 3…',
+    sequence: 'A coluna de número é ignorada: vale a ordem das linhas da planilha.',
+    column: 'A planilha precisa ter uma coluna de número com todos os números de 1 até o último.'
   };
   var PATTERN_HINTS = {
     bradesco: 'Ex.: 123456789_RA_doc1.pdf',
-    sulamerica: 'Ex.: 00000000000123456789.pdf',
+    sulamerica: 'Ex.: 00000000000123456789.pdf. Se o número da guia já começar com os 11 zeros, eles não são repetidos.',
     amhp: 'Ex.: Maria Silva.pdf'
   };
 
@@ -350,8 +350,8 @@
     els.clearPdfs.hidden = count === 0;
     els.pdfsSummary.textContent = count
       ? state.busy
-        ? 'Lendo arquivos…'
-        : count + ' PDF(s) anexado(s).'
+        ? 'Lendo os arquivos…'
+        : count + ' arquivo(s) PDF anexado(s).'
       : 'Nenhum PDF anexado ainda.';
 
     els.fileList.textContent = '';
@@ -378,14 +378,14 @@
         return candidate.index === item.number;
       });
       if (!item.isPdf) {
-        output.textContent = 'não é um PDF válido';
+        output.textContent = 'não é um PDF';
       } else if (entry) {
         output.textContent = '→ ';
         var strong = document.createElement('strong');
         strong.textContent = entry.outputName;
         output.appendChild(strong);
       } else {
-        output.textContent = 'sem par na tabela';
+        output.textContent = 'não encontrado na planilha';
       }
       li.appendChild(output);
 
@@ -408,16 +408,16 @@
 
   function renderTable() {
     var count = state.table ? state.table.rows.length : 0;
-    els.tableBadge.textContent = state.table ? count + ' linha(s)' : 'sem tabela';
+    els.tableBadge.textContent = state.table ? count + ' linha(s)' : 'sem planilha';
     els.tableBadge.className = 'badge' + (state.table && !state.table.errors.length ? ' ok' : '');
 
     if (state.tableError) {
-      els.tableSummary.textContent = state.tableFile ? state.tableFile.name : 'Erro na tabela';
+      els.tableSummary.textContent = state.tableFile ? state.tableFile.name : 'Erro na planilha';
     } else if (state.tableFile) {
       els.tableSummary.textContent =
         state.tableFile.name + (state.table ? ' • ' + count + ' linha(s)' : '');
     } else {
-      els.tableSummary.textContent = 'Nenhuma tabela anexada ainda.';
+      els.tableSummary.textContent = 'Nenhuma planilha anexada ainda.';
     }
 
     els.tablePreview.textContent = '';
@@ -425,7 +425,7 @@
     if (!state.table) {
       var empty = document.createElement('p');
       empty.className = 'empty';
-      empty.textContent = 'A prévia da tabela aparece aqui.';
+      empty.textContent = 'A prévia da planilha aparece aqui.';
       els.tablePreview.appendChild(empty);
       return;
     }
@@ -434,7 +434,7 @@
     if (!rows.length) {
       var noRows = document.createElement('p');
       noRows.className = 'empty';
-      noRows.textContent = 'Nenhuma linha com dados foi encontrada.';
+      noRows.textContent = 'Nenhuma linha com dados foi encontrada na planilha.';
       els.tablePreview.appendChild(noRows);
       return;
     }
@@ -442,7 +442,7 @@
     var table = document.createElement('table');
     var thead = document.createElement('thead');
     var headRow = document.createElement('tr');
-    ['Nº', 'Paciente', 'Nº da guia'].forEach(function (label) {
+    ['Ordem', 'Paciente', 'Número da guia'].forEach(function (label) {
       var th = document.createElement('th');
       th.scope = 'col';
       th.textContent = label;
@@ -468,8 +468,8 @@
       note.className = 'table-note';
       note.textContent =
         state.numbering === 'sequence'
-          ? 'Numeração forçada 1..' + rows.length + ' pela ordem das linhas.'
-          : 'Sem coluna de número: sequência 1..' + rows.length + ' gerada pela ordem das linhas.';
+          ? 'Numeração pela ordem das linhas: 1 até ' + rows.length + '.'
+          : 'A planilha não tem coluna de número. A ordem das linhas define 1 até ' + rows.length + '.';
       els.tablePreview.appendChild(note);
     }
 
@@ -503,7 +503,7 @@
 
     if (canGenerate()) {
       els.issues.appendChild(
-        issueNode('success', 'Tudo certo: ' + state.plan.entries.length + ' guia(s) prontas para renomear.')
+        issueNode('success', 'Tudo certo! ' + state.plan.entries.length + ' arquivo(s) pronto(s) para renomear.')
       );
     }
   }
@@ -563,8 +563,8 @@
     els.generate.textContent = state.busy
       ? 'Processando…'
       : ready
-        ? 'Gerar e baixar ZIP (' + state.plan.entries.length + ')'
-        : 'Gerar e baixar ZIP';
+        ? 'Baixar arquivos renomeados (' + state.plan.entries.length + ')'
+        : 'Baixar arquivos renomeados (ZIP)';
 
     if (els.resultBadge) {
       els.resultBadge.className = 'badge' + (state.issues.length ? ' error' : ready ? ' ok' : '');
@@ -576,15 +576,16 @@
     }
 
     if (state.pdfs.length && !state.table) {
-      els.actionsHint.textContent = 'Anexe a tabela das guias para parear os PDFs.';
+      els.actionsHint.textContent =
+        'Agora anexe a planilha com os dados das guias para ligar cada PDF ao paciente certo.';
     } else if (state.table && !state.pdfs.length) {
-      els.actionsHint.textContent = 'Anexe os PDFs numerados de 1 a n.';
+      els.actionsHint.textContent = 'Agora anexe os PDFs, numerados de 1 até o último arquivo do lote.';
     } else if (ready) {
       els.actionsHint.textContent =
-        'Os ' + state.plan.entries.length + ' PDFs serão empacotados em ' + Core.ARCHIVE_NAME + '.';
+        'Tudo pronto: os ' + state.plan.entries.length + ' arquivos serão salvos juntos em ' + Core.ARCHIVE_NAME + '.';
     } else {
       els.actionsHint.textContent =
-        'A geração é liberada quando todos os PDFs de 1 a n estiverem pareados com a tabela.';
+        'O botão é liberado quando todos os PDFs, de 1 até o último, estiverem combinados com a planilha.';
     }
   }
 
@@ -604,7 +605,7 @@
 
       var archive = Core.createArchive(entries);
       download(archive, state.plan.archiveName);
-      showToast(entries.length + ' guia(s) renomeada(s). ZIP baixado.');
+      showToast(entries.length + ' arquivo(s) renomeado(s). O download do ZIP começou.');
     } catch (error) {
       state.issues = state.issues.concat('Não foi possível gerar o ZIP: ' + error.message);
     } finally {

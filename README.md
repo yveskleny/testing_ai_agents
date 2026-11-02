@@ -10,11 +10,15 @@ arquivos renomeados no padrão escolhido:
 | **SulAmérica** | `00000000000<numero_da_guia>.pdf` (11 zeros + guia) | `00000000000456789012.pdf` |
 | **AMHP** | `<nome_do_paciente>.pdf` | `Ana Paula.pdf` |
 
+Se o número da guia já vier com os 11 zeros iniciais na tabela, eles **não são
+adicionados de novo**: o nome final continua com os mesmos 11 zeros, sem duplicá-los.
+
 Por exemplo: o PDF `3.pdf` combinado com a linha `3, Ana Paula, 45678` vira
 `45678_RA_doc3.pdf` no padrão Bradesco, `0000000000045678.pdf` no padrão SulAmérica e
-`Ana Paula.pdf` no padrão AMHP.
+`Ana Paula.pdf` no padrão AMHP. Se a guia já for `0000000000045678`, o nome SulAmérica
+continua `0000000000045678.pdf`.
 
-O padrão é escolhido no seletor **Padrão de renomeação** da página e vale para todo o lote.
+O padrão é escolhido no seletor **Como os arquivos serão renomeados** da página e vale para todo o lote.
 
 Tudo roda no navegador. Nenhum arquivo é enviado para servidor e o conteúdo dos PDFs
 não é alterado — só o nome.
@@ -23,15 +27,15 @@ não é alterado — só o nome.
 
 1. Abra o `index.html` no navegador (duplo clique já funciona) ou sirva a pasta com
    `python3 -m http.server` e acesse `http://localhost:8000`.
-2. Em **PDFs do lote**, anexe os arquivos. O número usado é o **primeiro número do nome**
+2. Em **PDFs das guias**, anexe os arquivos. O número usado é o **primeiro número do nome**
    do arquivo (`1.pdf`, `01.pdf`, `3 - Maria Silva.pdf`).
-3. Em **Tabela das guias**, anexe um `.csv` ou `.xlsx`. Há dois modelos prontos na
+3. Em **Planilha com os dados das guias**, anexe um `.csv` ou `.xlsx`. Há dois modelos prontos na
    própria página: **Baixar modelo XLSX** (`modelo.xlsx`, recomendado) e
    **Baixar modelo CSV** (`modelo.csv`).
-4. Confira a prévia em **Resultado do lote**: a tabela mostra **todas** as linhas lidas e a
+4. Confira a prévia em **Confira e baixe**: a tabela mostra **todas** as linhas lidas e a
    lista de renomeação mostra **todos** os arquivos, sem limite de quantidade. Se houver
    pendências, elas aparecem em vermelho com o que falta ou sobra.
-5. Clique em **Gerar e baixar ZIP** e receba `guias_renomeadas.zip`.
+5. Clique em **Baixar arquivos renomeados (ZIP)** e receba `guias_renomeadas.zip`.
 
 O teto prático é o do formato ZIP sem ZIP64 usado aqui: **65.535 arquivos** e **4 GB** por
 lote — acima disso a página avisa e pede para dividir. Além dele valem os limites de
@@ -72,7 +76,7 @@ Se a coluna existir, ela é usada como está:
   automática.
 - **Só a coluna de guias** também funciona: uma planilha com uma única coluna de números é
   lida como lista de guias e numerada 1..n na ordem.
-- O seletor **Numeração** permite forçar o comportamento: _Automática_ (padrão),
+- O seletor **Como numerar os arquivos** permite forçar o comportamento: _Automática_ (padrão),
   _Sempre 1..n pela ordem das linhas_ (ignora a coluna de número) ou _Exigir coluna de
   número_ (bloqueia se ela não existir).
 - Linhas totalmente vazias são ignoradas.
@@ -124,7 +128,7 @@ Todo o processamento continua no navegador — os arquivos não saem da máquina
 ## Desenvolvimento
 
 ```bash
-node --test        # 78 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
+node --test        # 79 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
 ```
 
 Estrutura:

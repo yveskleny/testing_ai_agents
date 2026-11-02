@@ -10,7 +10,7 @@
     <title>Renomeador de guias de consulta</title>
     <meta
       name="description"
-      content="Anexe os PDFs numerados de 1 a n e a tabela de guias para baixar tudo renomeado no padrão Bradesco, SulAmérica ou nome do paciente."
+      content="Anexe os PDFs numerados e a planilha com os dados das guias para baixar todos os arquivos já renomeados, no padrão Bradesco, SulAmérica ou nome do paciente."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -20,9 +20,9 @@
         <p class="eyebrow">Lote de guias de consulta</p>
         <h1>Renomeie as guias do lote em segundos</h1>
         <p class="lede">
-          Anexe os PDFs numerados de <strong>1</strong> a <strong>n</strong> e a tabela com
-          <strong>número</strong>, <strong>nome do paciente</strong> e <strong>número da guia</strong>.
-          A página devolve um único ZIP com os arquivos renomeados no padrão escolhido.
+          Anexe os PDFs numerados de <strong>1</strong> até o último arquivo do lote e a planilha
+          com o <strong>nome do paciente</strong> e o <strong>número da guia</strong>. No final,
+          você baixa um único arquivo ZIP com todos os PDFs já renomeados.
         </p>
       </div>
     </header>
@@ -32,8 +32,9 @@
         <div class="card-head">
           <span class="step" aria-hidden="true">1</span>
           <div class="card-title">
-            <h2 id="step-pdfs">PDFs do lote</h2>
-            <p>De <code>1.pdf</code> até <code>n.pdf</code> — ou com o número no início do nome.</p>
+            <h2 id="step-pdfs">PDFs das guias</h2>
+            <p>Cada PDF precisa ter um número no começo do nome: <code>1.pdf</code>,
+              <code>02.pdf</code> ou <code>3 - Maria Silva.pdf</code>.</p>
           </div>
           <span class="badge" id="pdfs-badge">0 arquivos</span>
         </div>
@@ -48,8 +49,8 @@
               <path d="m9 15 3-3 3 3" />
             </svg>
           </span>
-          <span class="drop-title">Arraste os PDFs aqui ou clique para selecionar</span>
-          <span class="drop-hint">Aceita vários arquivos de uma vez</span>
+          <span class="drop-title">Arraste os PDFs aqui ou clique para escolher</span>
+          <span class="drop-hint">Você pode escolher vários arquivos de uma vez.</span>
         </label>
 
         <div class="list-head">
@@ -63,10 +64,11 @@
         <div class="card-head">
           <span class="step" aria-hidden="true">2</span>
           <div class="card-title">
-            <h2 id="step-table">Tabela das guias</h2>
-            <p>Arquivo <code>.csv</code> ou <code>.xlsx</code>, com ou sem cabeçalho.</p>
+            <h2 id="step-table">Planilha com os dados das guias</h2>
+            <p>Pode ser uma planilha do Excel (<code>.xlsx</code>) ou um arquivo <code>.csv</code>.
+              O cabeçalho é opcional.</p>
           </div>
-          <span class="badge" id="table-badge">sem tabela</span>
+          <span class="badge" id="table-badge">sem planilha</span>
         </div>
 
         <label class="dropzone" id="table-drop" for="table-input" tabindex="0" role="button">
@@ -77,14 +79,14 @@
               <path d="M3 10h18M9 4v16M15 4v16" />
             </svg>
           </span>
-          <span class="drop-title">Arraste a tabela aqui ou clique para selecionar</span>
-          <span class="drop-hint">Colunas: nº (opcional, gerado 1..n), paciente, nº da guia</span>
+          <span class="drop-title">Arraste a planilha aqui ou clique para escolher</span>
+          <span class="drop-hint">Ela precisa ter o nome do paciente e o número da guia. A coluna com o número de ordem é opcional.</span>
         </label>
 
         <div class="list-head">
-          <span id="table-summary">Nenhuma tabela anexada ainda.</span>
+          <span id="table-summary">Nenhuma planilha anexada ainda.</span>
           <span class="link-group">
-            <a class="link-btn" href="modelo.xlsx" download="modelo.xlsx">Baixar modelo XLSX</a>
+            <a class="link-btn" href="modelo.xlsx" download="modelo.xlsx">Baixar modelo Excel (.xlsx)</a>
             <a class="link-btn" href="modelo.csv" download="modelo.csv">Baixar modelo CSV</a>
           </span>
         </div>
@@ -95,19 +97,19 @@
         <div class="card-head">
           <span class="step" aria-hidden="true">3</span>
           <div class="card-title">
-            <h2 id="step-result">Resultado do lote</h2>
-            <p>Confira a prévia e baixe tudo em um único ZIP.</p>
+            <h2 id="step-result">Confira e baixe</h2>
+            <p>Veja como cada arquivo vai ficar e baixe tudo de uma vez em um único ZIP.</p>
           </div>
           <span class="badge" id="result-badge">aguardando</span>
         </div>
 
         <div class="pattern-row">
           <label class="pattern-label" for="pattern-select">
-            <span class="pattern-title">Padrão de renomeação</span>
+            <span class="pattern-title">Como os arquivos serão renomeados</span>
             <select id="pattern-select" name="pattern">
-              <option value="bradesco" selected>Bradesco — &lt;número_da_guia&gt;_RA_doc&lt;i&gt;.pdf</option>
-              <option value="sulamerica">SulAmérica — 00000000000&lt;número_da_guia&gt;.pdf</option>
-              <option value="amhp">AMHP — &lt;nome_do_paciente&gt;.pdf</option>
+              <option value="bradesco" selected>Bradesco — número da guia + _RA_doc + número do arquivo</option>
+              <option value="sulamerica">SulAmérica — 11 zeros no começo + número da guia (00000000000&lt;número_da_guia&gt;.pdf)</option>
+              <option value="amhp">AMHP — nome do paciente (&lt;nome_do_paciente&gt;.pdf)</option>
             </select>
           </label>
           <p class="pattern-hint" id="pattern-hint">Ex.: 123456789_RA_doc1.pdf</p>
@@ -115,18 +117,18 @@
 
         <div class="pattern-row">
           <label class="pattern-label" for="numbering-select">
-            <span class="pattern-title">Numeração</span>
+            <span class="pattern-title">Como numerar os arquivos (1, 2, 3…)</span>
             <select id="numbering-select" name="numbering">
-              <option value="auto" selected>Automática — usa a coluna de número, se existir</option>
-              <option value="sequence">Sempre 1..n pela ordem das linhas</option>
-              <option value="column">Exigir coluna de número na tabela</option>
+              <option value="auto" selected>Automático — usa a coluna de número se ela existir (recomendado)</option>
+              <option value="sequence">Sempre pela ordem das linhas da planilha</option>
+              <option value="column">Obrigar a planilha a ter uma coluna de número</option>
             </select>
           </label>
-          <p class="pattern-hint" id="numbering-hint">Sem coluna de número, a ordem das linhas define o 1..n.</p>
+          <p class="pattern-hint" id="numbering-hint">Se a planilha tiver uma coluna de número, ela é usada. Se não tiver, a ordem das linhas define 1, 2, 3…</p>
         </div>
 
         <div class="stats" id="stats" hidden>
-          <div class="stat"><strong id="stat-rows">0</strong><span>linhas na tabela</span></div>
+          <div class="stat"><strong id="stat-rows">0</strong><span>linhas na planilha</span></div>
           <div class="stat"><strong id="stat-files">0</strong><span>PDFs anexados</span></div>
           <div class="stat"><strong id="stat-ready">0</strong><span>prontos para renomear</span></div>
         </div>
@@ -138,26 +140,26 @@
             <caption class="sr-only">Prévia dos arquivos renomeados</caption>
             <thead>
               <tr>
-                <th scope="col">Nº</th>
+                <th scope="col">Ordem</th>
                 <th scope="col">Paciente</th>
-                <th scope="col">Nº da guia</th>
-                <th scope="col">Arquivo original</th>
-                <th scope="col">Novo nome</th>
+                <th scope="col">Número da guia</th>
+                <th scope="col">Arquivo que você anexou</th>
+                <th scope="col">Nome que será salvo</th>
               </tr>
             </thead>
             <tbody id="rename-body"></tbody>
           </table>
           <p class="empty" id="rename-empty">
-            Anexe os PDFs e a tabela para ver a prévia da renomeação.
+            Anexe os PDFs e a planilha para ver aqui como cada arquivo vai ficar.
           </p>
         </div>
 
         <div class="actions">
           <button class="primary" id="generate" type="button" disabled>
-            Gerar e baixar ZIP
+            Baixar arquivos renomeados (ZIP)
           </button>
           <p class="actions-hint" id="actions-hint">
-            A geração é liberada quando todos os PDFs de 1 a n estiverem pareados com a tabela.
+            O botão é liberado quando todos os PDFs, de 1 até o último, estiverem combinados com a planilha.
           </p>
         </div>
       </section>
