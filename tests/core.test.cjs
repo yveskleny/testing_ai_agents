@@ -498,3 +498,17 @@ test('parseTable exige a coluna de número com numbering column', () => {
   assert.equal(result.rows.length, 0);
   assert.match(result.errors.join('\n'), /não tem coluna de número sequencial/);
 });
+
+test('parseTable recusa tabela acima do limite de linhas', () => {
+  const result = Core.parseTable(new Array(100001));
+
+  assert.equal(result.rows.length, 0);
+  assert.match(result.errors.join('\n'), /limite de segurança/);
+});
+
+test('parseTable recusa tabela acima do limite de colunas', () => {
+  const result = Core.parseTable([new Array(1001).fill('x')]);
+
+  assert.equal(result.rows.length, 0);
+  assert.match(result.errors.join('\n'), /limite de segurança/);
+});

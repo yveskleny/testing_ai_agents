@@ -33,8 +33,9 @@ não é alterado — só o nome.
    pendências, elas aparecem em vermelho com o que falta ou sobra.
 5. Clique em **Gerar e baixar ZIP** e receba `guias_renomeadas.zip`.
 
-Não existe limite de guias por lote. O único teto é o do formato ZIP sem ZIP64 usado aqui:
-**65.535 arquivos** e **4 GB** por lote — acima disso a página avisa e pede para dividir.
+O teto prático é o do formato ZIP sem ZIP64 usado aqui: **65.535 arquivos** e **4 GB** por
+lote — acima disso a página avisa e pede para dividir. Além dele valem os limites de
+segurança da tabela descritos abaixo.
 
 ## Formato da tabela
 
@@ -100,10 +101,26 @@ Navegador moderno (Chrome/Edge 103+, Firefox 113+, Safari 16.4+), necessário pa
 `.xlsx`. Para apenas CSV, qualquer navegador com JavaScript ativado serve. Não há
 instalação, build, servidor ou dependências de terceiros.
 
+## Limites de segurança
+
+Como a página abre arquivos escolhidos por você, os leitores têm tetos para que um arquivo
+malformado não trave a aba:
+
+- tabela: até **100.000 linhas** e **1.000 colunas**;
+- arquivo de tabela (`.csv` ou `.xlsx`): até **25 MB**;
+- cada entrada descomprimida do `.xlsx`: até **64 MB**, limitada a **128 MB** no total por
+  arquivo.
+
+Acima disso a página mostra um erro e não processa o lote.
+
+A página também inclui uma `Content-Security-Policy` restritiva: os scripts são todos
+locais (`script-src 'self'`) e não há nenhuma requisição de rede (`connect-src 'none'`).
+Todo o processamento continua no navegador — os arquivos não saem da máquina.
+
 ## Desenvolvimento
 
 ```bash
-node --test        # 65 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
+node --test        # 73 testes: ZIP, XLSX, CSV, núcleo e estrutura da página
 ```
 
 Estrutura:

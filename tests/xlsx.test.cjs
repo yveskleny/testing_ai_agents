@@ -66,3 +66,24 @@ test('read() funciona sem atributos de referência (r) em linhas e células', as
     ['2', '98765'],
   ]);
 });
+
+test('read() recusa planilha acima do limite de linhas', async () => {
+  const bytes = buildXlsx({
+    rowsXml: '<row r="100001"><c t="inlineStr"><is><t>x</t></is></c></row>',
+  });
+  await assert.rejects(() => Xlsx.read(bytes), /limite de segurança/);
+});
+
+test('read() recusa planilha acima do limite de colunas', async () => {
+  const bytes = buildXlsx({
+    rowsXml: '<row r="1"><c r="ZZZ1" t="inlineStr"><is><t>x</t></is></c></row>',
+  });
+  await assert.rejects(() => Xlsx.read(bytes), /limite de segurança/);
+});
+
+test('read() recusa referência de célula inválida', async () => {
+  const bytes = buildXlsx({
+    rowsXml: '<row r="1"><c r="1A" t="inlineStr"><is><t>x</t></is></c></row>',
+  });
+  await assert.rejects(() => Xlsx.read(bytes), /referência de célula inválida/);
+});

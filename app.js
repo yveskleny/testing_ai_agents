@@ -14,6 +14,9 @@
     amhp: 'Ex.: Maria Silva.pdf'
   };
 
+  // Limite de segurança: não lê uma tabela maior que isto para a memória.
+  var MAX_TABLE_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+
   var state = {
     pdfs: [],
     table: null,
@@ -223,6 +226,14 @@
 
   async function readTableFile(file) {
     var name = file.name.toLowerCase();
+
+    if (file.size > MAX_TABLE_FILE_BYTES) {
+      throw new Error(
+        'o arquivo tem ' + (file.size / 1048576).toFixed(1) +
+          ' MB, acima do limite de segurança de 25 MB. Divida a tabela em partes.'
+      );
+    }
+
     if (/\.xls$/.test(name)) {
       throw new Error('o formato .xls antigo não é suportado. Salve como .xlsx ou .csv.');
     }

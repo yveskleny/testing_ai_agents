@@ -95,3 +95,15 @@ test('a prévia da tabela mostra todas as linhas, sem limite de 12', () => {
   assert.doesNotMatch(app, /Mostrando\s+\d+\s+de/);
   assert.match(app, /rows\.forEach\(function \(row\)/);
 });
+
+test('index.html inclui uma Content-Security-Policy restritiva', () => {
+  assert.match(html, /http-equiv="Content-Security-Policy"/);
+  assert.match(html, /default-src 'none'/);
+  assert.match(html, /script-src 'self'/);
+  assert.match(html, /connect-src 'none'/);
+});
+
+test('app.js limita o tamanho da tabela antes de ler', () => {
+  assert.match(app, /MAX_TABLE_FILE_BYTES/);
+  assert.match(app, /limite de segurança de 25 MB/);
+});

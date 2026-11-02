@@ -50,3 +50,15 @@ test('create() aceita lotes grandes e recusa acima de 65.535 entradas', async ()
 
   assert.throws(() => Zip.create(new Array(65536)), /acima do limite de 65535/);
 });
+
+test('read() recusa descompressão acima do limite de segurança (zip bomb)', async () => {
+  const bomb = makeZip([
+    { name: 'xl/worksheets/sheet1.xml', data: new Uint8Array(65 * 1024 * 1024) },
+  ]);
+  const zip = await Zip.read(bomb);
+
+  await assert.rejects(
+    () => zip.get('xl/worksheets/sheet1.xml'),
+    /limite de segurança de 64 MB/
+  );
+});
